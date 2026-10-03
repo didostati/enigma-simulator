@@ -1,0 +1,26 @@
+[
+  {
+    "title": "HARBOR NEWS",
+    "text": "The harbor authority announced new night schedules for cargo ships this week. Captain Weber said the evening tide will allow larger vessels to enter safely. Local merchants welcome the change and expect faster deliveries across the whole region.",
+    "secret_word": "TIDE",
+    "message": "MEET AT THE HARBOR AT MIDNIGHT"
+  },
+  {
+    "title": "WEATHER REPORT",
+    "text": "Heavy snow is expected in the mountain villages over the weekend. Meteorologists warn that strong winds may close several roads on Saturday. Residents are advised to prepare supplies and avoid unnecessary travel.",
+    "secret_word": "SNOW",
+    "message": "SEND MORE FOOD TO THE VILLAGE"
+  },
+  {
+    "title": "CITY MARKET",
+    "text": "The old city market opened its doors again after months of repairs. Vendors sell fresh bread, honey and vegetables from nearby farms. Visitors say the friendly atmosphere makes it the best place to shop on a sunny morning.",
+    "secret_word": "HONEY",
+    "message": "THE PACKAGE IS UNDER THE BRIDGE"
+  },
+  {
+    "title": "RAILWAY NOTICE",
+    "text": "Passengers should expect delays on the northern railway line due to maintenance work. The company promises to restore regular service by Friday evening. Tickets remain valid and extra buses will run between the main stations.",
+    "secret_word": "RAILWAY",
+    "message": "THE TRAIN LEAVES AT SIX"
+  }
+]

@@ -2,12 +2,17 @@
 newspaper.py - გაზეთის ეკრანი (გრაფიკული ინტერფეისი, tkinter).
 
 ეს ფაილი მხოლოდ გამოსახავს თამაშს: ლოგიკა (სტატიის არჩევა, შიფრვა,
-ვარაუდის შემოწმება, ვალიდაცია) რჩება game.py-ში და აქ უბრალოდ გამოიძახება.
+ვარაუდის შემოწმება, ვალიდაცია, შედეგების შენახვა) რჩება game.py-სა და
+storage.py-ში და აქ უბრალოდ გამოიძახება.
 
 ეკრანზე ჩანს:
     - გაზეთის სათაური და სტატია;
     - შიფრირებული შეტყობინება;
     - ველი საკვანძო სიტყვის ვარაუდისთვის და მცდელობების მრიცხველი.
+
+რაუნდის დასრულებისას (სწორი ვარაუდი ან მცდელობების ამოწურვა) შედეგი
+ინახება storage.save_result-ით. შენახვის შეცდომა ეკრანზე ჩანს, მაგრამ
+თამაშს არ აჩერებს.
 
 სწორი ვარაუდისას გამოიძახება on_solved(article, word) - ეს იქნება
 შემდეგი ეკრანის (ენიგმას მანქანის) გასაღები.
@@ -17,6 +22,7 @@ import tkinter as tk
 
 from enigma.components import EnigmaError
 from enigma.game import MAX_ATTEMPTS, check_guess, encrypt_message, pick_article
+from enigma.storage import save_result
 
 # ფერები: ძველი ქაღალდი და მელანი
 PAPER_COLOR = "#eadfc3"
@@ -116,6 +122,13 @@ class NewspaperScreen(tk.Frame):
         )
         self._message_label.pack(pady=6)
 
+        # შენახვის შეცდომის წარწერა: ცალკეა, რომ ძირითად შეტყობინებას არ გადაეწეროს
+        self._save_label = tk.Label(
+            self, bg=PAPER_COLOR, fg=BAD_COLOR, font=(FONT_FAMILY, 10),
+            wraplength=WRAP_WIDTH, justify="center",
+        )
+        self._save_label.pack()
+
         buttons_row = tk.Frame(self, bg=PAPER_COLOR)
         buttons_row.pack(pady=(2, 14))
         tk.Button(
@@ -143,6 +156,7 @@ class NewspaperScreen(tk.Frame):
         self._submit_button.config(state="normal")
         self._continue_button.pack_forget()
         self._show_message("", INK_COLOR)
+        self._save_label.config(text="")  # წინა რაუნდის შენახვის შეცდომას ვასუფთავებთ
         self._update_attempts()
         self._guess_entry.focus_set()
 
@@ -167,6 +181,18 @@ class NewspaperScreen(tk.Frame):
         self._guess_entry.config(state="disabled")
         self._submit_button.config(state="disabled")
 
+    def _save_round(self, guess, success):
+        """ინახავს რაუნდის შედეგს storage.save_result-ით.
+
+        შეცდომისას (EnigmaError) აჩვენებს მას ეკრანზე და თამაშს არ აჩერებს.
+        """
+        try:
+            save_result(
+                self._article["title"], guess.strip(), success, self._attempts_left,
+            )
+        except EnigmaError as error:
+            self._save_label.config(text=f"შედეგი ვერ შეინახა: {error}")
+
     # --- მოთამაშის მოქმედებები ---
     def _on_submit(self, event=None):
         """ამოწმებს ვარაუდს game.check_guess-ით. არასწორი ფორმატი მცდელობას არ ხარჯავს."""
@@ -183,6 +209,7 @@ class NewspaperScreen(tk.Frame):
         if success:
             self._show_message(f"სწორია! მანქანამ გაშიფრა: {decrypted}", GOOD_COLOR)
             self._finish_round()
+            self._save_round(guess, True)  # წარმატებული რაუნდის შენახვა
             if self._on_solved is not None:
                 self._continue_button.pack(side="left", padx=6)
             return
@@ -195,6 +222,7 @@ class NewspaperScreen(tk.Frame):
                 BAD_COLOR,
             )
             self._finish_round()
+            self._save_round(guess, False)  # წაგებული რაუნდის შენახვა
         else:
             self._show_message(
                 f"მანქანამ გაშიფრა: {decrypted} - უაზრობაა, სცადე თავიდან", BAD_COLOR,

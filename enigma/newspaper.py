@@ -22,6 +22,7 @@ import tkinter as tk
 
 from enigma.components import EnigmaError
 from enigma.game import MAX_ATTEMPTS, check_guess, encrypt_message, pick_article
+from enigma.history_view import HistoryWindow
 from enigma.storage import save_result
 
 # ფერები: ძველი ქაღალდი და მელანი
@@ -134,6 +135,9 @@ class NewspaperScreen(tk.Frame):
         tk.Button(
             buttons_row, text="ახალი სტატია", font=(FONT_FAMILY, 11), command=self.start_round,
         ).pack(side="left", padx=6)
+        tk.Button(
+            buttons_row, text="ისტორია", font=(FONT_FAMILY, 11), command=self._open_history,
+        ).pack(side="left", padx=6)
         # "გაგრძელება" ჩანს მხოლოდ სწორი ვარაუდის შემდეგ
         self._continue_button = tk.Button(
             buttons_row, text="გაგრძელება ➜", font=(FONT_FAMILY, 11, "bold"),
@@ -232,3 +236,7 @@ class NewspaperScreen(tk.Frame):
         """გადასცემს გამოცნობილ სიტყვას გარე ფუნქციას (შემდეგი ეკრანისთვის)."""
         if self._on_solved is not None:
             self._on_solved(self._article, self._article["secret_word"])
+            
+    def _open_history(self):
+        """ხსნის ისტორიის ფანჯარას (ფანჯარა მოდალურია: სანამ ღიაა, თამაში ელოდება)."""
+        HistoryWindow(self.winfo_toplevel())        
